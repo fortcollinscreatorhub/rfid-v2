@@ -1,0 +1,3 @@
+[submodule "components/LovyanGFX"]
+	path = code/components/LovyanGFX
+	url = https://github.com/fortcollinscreatorhub/mirror-LovyanGFX.git
