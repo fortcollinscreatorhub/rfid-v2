@@ -1,0 +1,94 @@
+U1
+    ideaspark® ESP32 Development Board 1.14 inch 135x240 LCD Display,CH340,WiFi+BL
+    https://www.ebay.com/itm/176446899270
+    ebay seller: https://www.ebay.com/str/ideaspark
+    Amazon ???
+    https://www.aliexpress.us/item/3256807079419720.html
+
+    Alternative (change #if in lcd.cpp):
+    ideaspark® ESP32 Development Board 16MB 1.9 in 170x320 LCD Display,CH340,WiFi+BL
+    https://www.ebay.com/itm/176425903544
+    ebay seller: https://www.ebay.com/str/ideaspark
+    https://www.amazon.com/dp/B0D6QXC813
+    https://www.aliexpress.us/item/3256806995121078.html
+
+U2
+    RDM6300
+    HiLetgo RDM6300 125 KHZ EM4100 RFID Card Read Module UART Serial Output for Arduino
+    https://www.amazon.com/dp/B00HGB9TOE
+    https://www.aliexpress.us/item/3256803401542028.html
+    (Many others sell the exact same item on all sites)
+
+Q1
+    PN2222A TO92 (or probably many other NPN BJTs)
+    https://www.mouser.com/ProductDetail/onsemi-Fairchild/PN2222ABU?qs=UMEuL5FsraBJOIjLOc%2FtCA%3D%3D
+    https://www.digikey.com/en/products/detail/stmicroelectronics/PN2222A/603431
+    https://www.amazon.com/dp/B0C1V82313
+
+D1
+    1N4001 (or probably many other diodes)
+    https://www.mouser.com/ProductDetail/Diotec-Semiconductor/1N4001?qs=OlC7AqGiEDlll8NA510wmA%3D%3D
+    https://www.digikey.com/en/products/detail/diotec-semiconductor/1N4001/13164614
+    https://www.amazon.com/dp/B0C1V6Y8ND
+
+R1
+    1K resistor (any; low power)
+    https://www.mouser.com/ProductDetail/SEI-Stackpole/RNMF14FTC1K00?qs=sGAEpiMZZMsPqMdJzcrNwqlVBU9Ua%252BowUzpSLSlOnmEbKmXkSwOyJA%3D%3D (1/4W 1%)
+    https://www.digikey.com/en/products/detail/stackpole-electronics-inc/RNMF14FTC1K00/2617302?s=N4IgTCBcDaIEoDkCyAxAjAFhQFQMJoGkAGIkAXQF8g (1/4W 1%)
+    https://www.amazon.com/ALLECIN-Metal-Film-Resistor-Kit/dp/B0CDWVLTM1 (1/4W 1%)
+    https://www.amazon.com/ALLECIN-8W-Metal-Film-Resistor/dp/B0C77TM3NR (1/8W 1%
+
+R2
+    10K resistor (any; low power)
+    https://www.mouser.com/ProductDetail/SEI-Stackpole/RNMF14FTC10K0?qs=sGAEpiMZZMsPqMdJzcrNwqlVBU9Ua%252BowsViL0AjCsrHsAPAfG0JLiA%3D%3D (1/4W 1%)
+    https://www.digikey.com/en/products/detail/stackpole-electronics-inc/RNMF14FTC10K0/1683930?s=N4IgTCBcDaIEoDkCyAxAjAFhQFQMJoAYBpAkAXQF8g (1/4W 1%)
+    https://www.amazon.com/ALLECIN-Metal-Film-Resistor-Kit/dp/B0CDWVLTM1 (1/4W 1%)
+    https://www.amazon.com/ALLECIN-8W-Metal-Film-Resistor/dp/B0C77TM3NR (1/8W 1%
+
+R3
+    2K2 resistor (any; low power)
+    https://www.mouser.com/ProductDetail/SEI-Stackpole/RNMF14FTC2K20?qs=FESYatJ8odLQKVeLgxWICg%3D%3D (1/4W 1%)
+    https://www.digikey.com/en/products/detail/stackpole-electronics-inc/RNMF14FTC2K20/2617325?s=N4IgTCBcDaIEoDkCyAxAjAFhQFQMJgGkwAGEAXQF8g (1/4W 1%)
+    https://www.amazon.com/ALLECIN-Metal-Film-Resistor-Kit/dp/B0CDWVLTM1 (1/4W 1%)
+    https://www.amazon.com/ALLECIN-8W-Metal-Film-Resistor/dp/B0C77TM3NR (1/8W 1%
+
+R4
+    3K3 resistor (any; low power)
+    https://www.mouser.com/ProductDetail/SEI-Stackpole/RNMF14FTC3K30?qs=FESYatJ8odL%252B4KIkrQ9kpA%3D%3D (1/4W 1%)
+    https://www.digikey.com/en/products/detail/stackpole-electronics-inc/RNMF14FTC3K30/2617342?s=N4IgTCBcDaIEoDkCyAxAjAFhQFQMIGYBpfABhAF0BfIA (1/4W 1%)
+    https://www.amazon.com/ALLECIN-Metal-Film-Resistor-Kit/dp/B0CDWVLTM1 (1/4W 1%)
+    https://www.amazon.com/ALLECIN-8W-Metal-Film-Resistor/dp/B0C77TM3NR (1/8W 1%
+
+K1
+    Omron G6S-2
+    https://www.mouser.com/ProductDetail/Omron-Electronics/G6S-2-DC5?qs=PuRzBkp%252Brz5TA3zk18rsvQ%3D%3D
+    https://www.digikey.com/en/products/detail/omron-electronics-inc-emc-div/G6S-2-DC5/333982
+    https://www.amazon.com/dp/B082Z3K9BG
+
+J1
+    0.2"/5mm PCB mount screw terminal block, 2-pin
+    https://www.mouser.com/ProductDetail/Phoenix-Contact/5452257?qs=iCzJi%2FIZBF6%2Fj2I2DfTHZA%3D%3D
+    https://www.digikey.com/en/products/detail/phoenix-contact/5452257/4391130?s=N4IgTCBcDaIKwBY5jHA7CAugXyA
+    https://www.amazon.com/gp/product/B0D1GMMTZ5
+
+J2
+    0.2"/5mm PCB mount screw terminal block, 3-pin
+    https://www.mouser.com/ProductDetail/Phoenix-Contact/5452258?qs=sGAEpiMZZMvPvGwLNS671y19%252B%2FPPI9uekBdR6wsus8KNZSpZdzRMcA%3D%3D
+    https://www.digikey.com/en/products/detail/phoenix-contact/5452258/4391131
+    https://www.amazon.com/gp/product/B0D1GMMTZ5
+
+J3
+    No part; solder in the coil that comes with RDM6300.
+
+Power supply for the RFID reader
+    Meanwell APV-25-5 (25W 5V)
+    https://www.amazon.com/dp/B00HKJ6JKE
+
+Power supply for 12V external devices
+    Meanwell APV-25-12 (25W 12V)
+    https://www.amazon.com/Constant-Voltage-Switching-Supply-2100mA/dp/B00MEJTTCU
+
+SSR for device control
+    CG Solid State Relay SSR-25DA DC to AC Input 3-32VDC To Output 24-480VAC 25A Single Phase Plastic Cover…
+    https://www.amazon.com/dp/B08GPJ1V2J
+    (or many others)
