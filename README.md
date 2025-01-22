@@ -26,6 +26,23 @@ This project uses git submodules, unfortunately. To clone the repository, run:
 ```shell
 git clone --recurse-submodules https://github.com/fortcollinscreatorhub/rfid-v2
 ```
+
+If you wish to push back to the github repo, you probably want to clone with
+`ssh`, or edit `.git/config` to use ssh URLs after cloning, e.g.:
+
+```shell
+git clone --recurse-submodules git@github.com:fortcollinscreatorhub/rfid-v2
+```
+
+Or after cloning:
+
+```shell
+vi .git/config
+```
+
+Even if you clone using the ssh URL, you'll still need to edit the remote
+definition for each submodule after the initial clone operation.
+
 # PCB
 
 The PCB was developed using KiCAD 7.0.11 under Ubuntu.
