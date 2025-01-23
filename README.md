@@ -51,6 +51,10 @@ Prototype versions of the PCB were manufactured by
 [OSHPARK](https://oshpark.com/). The KiCAD PCB file was uploaded directly, as
 opposed to exporting Gerber files, etc.
 
+# Mounting Boxes
+
+See the [README file there](mounting-boxes/README.md).
+
 # Software (code)
 
 ## Development environment
