@@ -17,6 +17,7 @@ static const int cm_rfid_pin_txd = UART_PIN_NO_CHANGE;
 static const int cm_rfid_pin_rxd = GPIO_NUM_13;
 static const int cm_rfid_pin_rts = UART_PIN_NO_CHANGE;
 static const int cm_rfid_pin_cts = UART_PIN_NO_CHANGE;
+static const TickType_t rfid_timeout_ticks = 2000 / portTICK_PERIOD_MS;
 
 static rfid_callback_present *rfid_cb_present;
 static rfid_callback_absent *rfid_cb_absent;
@@ -79,8 +80,7 @@ static void rfid_check_timeout() {
 
     TickType_t now = xTaskGetTickCount();
     TickType_t time_since_rfid = now - last_rfid_time;
-    static const TickType_t rfid_timeout = 300 / portTICK_PERIOD_MS;
-    if (time_since_rfid < rfid_timeout)
+    if (time_since_rfid < rfid_timeout_ticks)
         return;
 
     rfid_send_removed();
