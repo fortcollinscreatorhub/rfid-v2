@@ -1,8 +1,4 @@
-PCB:
-* None.
-
 Code:
-* Web-based GPIO override, for testing.
 * Web-based show RFID override, for testing.
 * /status or /info page, for easy management.
 * lcd config page: resolution, etc.
