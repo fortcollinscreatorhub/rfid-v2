@@ -59,6 +59,20 @@ static cm_conf_page lcd_conf_page = {
     .items_count = ARRAY_SIZE(lcd_items),
 };
 
+static bool lcd_show_rfids_override;
+
+static void lcd_http_action_show_rfids_toggle() {
+    lcd_show_rfids_override = !lcd_show_rfids_override;
+}
+
+static const char *lcd_http_action_show_rfids_toggle_description() {
+    if (lcd_show_rfids_override) {
+        return "Toggle Show RFIDs Override (Is On)";
+    } else {
+        return "Toggle Show RFIDs Override (Is Off)";
+    }
+}
+
 enum lcd_message_id {
     LCD_MESSAGE_TIMER,
     LCD_MESSAGE_RFID_ERR,
@@ -313,7 +327,7 @@ static void lcd_draw_page_rfid() {
     case LCD_MESSAGE_RFID_ERR:
     case LCD_MESSAGE_RFID_OK:
     case LCD_MESSAGE_RFID_BAD:
-        if (lcd_show_rfids) {
+        if (lcd_show_rfids || lcd_show_rfids_override) {
             p += sprintf(p, "\n%lu", lcd_last_rfid_message.rfid);
         } else {
             p = stpcpy(p, "\n<hidden>");
@@ -443,6 +457,12 @@ void lcd_init() {
 
     BaseType_t xRet = xTaskCreate(lcd_task, "lcd", 4096, NULL, 5, NULL);
     assert(xRet == pdPASS);
+
+    cm_http_register_home_action(
+        "toggle-show-rfids",
+        lcd_http_action_show_rfids_toggle_description,
+        lcd_http_action_show_rfids_toggle
+    );
 }
 
 void lcd_on_rfid_err(uint32_t rfid) {
