@@ -81,8 +81,10 @@ J3
     No part; solder in the coil that comes with RDM6300.
 
 Power supply for the RFID reader
-    Meanwell APV-25-5 (25W 5V)
+    Meanwell APV-25-5 (25W 5V) (rather large.)
     https://www.amazon.com/dp/B00HKJ6JKE
+    Meanwell APV-12-5 (12W 5V) (smaller, cheaper, and seems to work fine.)
+    https://www.amazon.com/dp/B00FRBSI2E
 
 Power supply for 12V external devices
     Meanwell APV-25-12 (25W 12V)
