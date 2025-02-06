@@ -21,23 +21,52 @@
 #define DISPLAY_MISO -1
 #define DISPLAY_BUSY -1
 
-#if 1 // ideaspark® ESP32 Development Board 1.14 inch 135x240 LCD Display,CH340,WiFi+BL
-#define DISPLAY_WIDTH 240
-#define DISPLAY_HEIGHT 135
-#define DISPLAY_OFFSET_X 40
-#define DISPLAY_OFFSET_Y 53
-#define DISPLAY_FONT_SIZE 2
-#elif 1 // ideaspark® ESP32 Development Board 16MB 1.9 in 170x320 LCD Display,CH340,WiFi+BL
-#define DISPLAY_WIDTH 320
-#define DISPLAY_HEIGHT 170
-#define DISPLAY_OFFSET_X 0
-#define DISPLAY_OFFSET_Y 35
-#define DISPLAY_FONT_SIZE 3
-#else
-#error No LCD definition enabled
-#endif
+struct lcd_config {
+    int width;
+    int height;
+    int offset_x;
+    int offset_y;
+    int font_size;
+};
+
+static const lcd_config lcd_configs[] = {
+    // ideaspark® ESP32 Development Board 1.14 inch 135x240 LCD Display,CH340,WiFi+BL
+    // This also works on the 1.9" board, just with an uninitialized border
+    {
+        .width = 240,
+        .height = 135,
+        .offset_x = 40,
+        .offset_y = 53,
+        .font_size = 2,
+    },
+    // ideaspark® ESP32 Development Board 16MB 1.9 in 170x320 LCD Display,CH340,WiFi+BL
+    {
+        .width = 320,
+        .height = 170,
+        .offset_x = 0,
+        .offset_y = 35,
+        .font_size = 3,
+    },
+};
+static const lcd_config *lcd_config = nullptr;
 
 static const char *TAG = "lcd";
+
+static uint16_t lcd_type;
+static void lcd_replace_invalid_type(cm_conf_item *item, cm_conf_p_val p_val_u) {
+    uint16_t *p_val = p_val_u.u16;
+    uint16_t val = *p_val;
+    if (val >= ARRAY_SIZE(lcd_configs))
+        *p_val = 0;
+}
+static cm_conf_item lcd_item_lcd_type = {
+    .slug_name = "ty", // TYpe
+    .text_name = "Type (0: ideaspark 1.14\", 1: ideaspark 1.90\")",
+    .type = CM_CONF_ITEM_TYPE_U16,
+    .p_val = {.u16 = &lcd_type },
+    .default_func = &cm_conf_default_u16_0,
+    .replace_invalid_value = lcd_replace_invalid_type,
+};
 
 static uint16_t lcd_show_rfids;
 static cm_conf_item lcd_item_lcd_show_rfids = {
@@ -49,6 +78,7 @@ static cm_conf_item lcd_item_lcd_show_rfids = {
 };
 
 static cm_conf_item *lcd_items[] = {
+    &lcd_item_lcd_type,
     &lcd_item_lcd_show_rfids,
 };
 
@@ -126,10 +156,10 @@ public:
         panel_cfg.pin_cs = DISPLAY_CS;
         panel_cfg.pin_rst = DISPLAY_RST;
         panel_cfg.pin_busy = DISPLAY_BUSY;
-        panel_cfg.panel_width = DISPLAY_WIDTH;
-        panel_cfg.panel_height = DISPLAY_HEIGHT;
-        panel_cfg.offset_x = DISPLAY_OFFSET_X;
-        panel_cfg.offset_y = DISPLAY_OFFSET_Y;
+        panel_cfg.panel_width = lcd_config->width;
+        panel_cfg.panel_height = lcd_config->height;
+        panel_cfg.offset_x = lcd_config->offset_x;
+        panel_cfg.offset_y = lcd_config->offset_y;
         panel_cfg.offset_rotation = 0;
         panel_cfg.dummy_read_pixel = 8;
         panel_cfg.dummy_read_bits = 1;
@@ -161,7 +191,7 @@ static lcd_message lcd_last_rfid_message{
     .id = LCD_MESSAGE_RFID_NONE,
     .rfid = 0,
 };
-static LcdDevice lcd;
+static LcdDevice *lcd = nullptr;
 
 // Within a uint16_t, 5 bit per channel: b@11, g@6, grey@5, r@0
 // CONFUSING: Colors are interpreted differently if within a uint32_t.
@@ -200,18 +230,18 @@ static void lcd_msg(const char *s) {
         break;
     }
 
-    lcd.clear(bg);
+    lcd->clear(bg);
     uint16_t stat_bar_color;
     if (!lcd_sta_connected || !lcd_mqtt_connected)
         stat_bar_color = lcd_color_err;
     else
         stat_bar_color = lcd_color_ok;
-    lcd.setColor(stat_bar_color);
-    lcd.fillRect(0, DISPLAY_HEIGHT - 8, DISPLAY_WIDTH, 8);
-    lcd.setCursor(0, 0);
-    lcd.setTextSize(DISPLAY_FONT_SIZE);
-    lcd.setTextColor(TFT_WHITE);
-    lcd.println(s);
+    lcd->setColor(stat_bar_color);
+    lcd->fillRect(0, lcd_config->height - 8, lcd_config->width, 8);
+    lcd->setCursor(0, 0);
+    lcd->setTextSize(lcd_config->font_size);
+    lcd->setTextColor(TFT_WHITE);
+    lcd->println(s);
 }
 
 static void lcd_on_timer(TimerHandle_t xTimer) {
@@ -405,8 +435,8 @@ static void lcd_on_msg_rfid_none(lcd_message &msg) {
 }
 
 static void lcd_task(void *pvParameters) {
-    assert(lcd.init());
-    lcd.setBrightness(255);
+    assert(lcd->init());
+    lcd->setBrightness(255);
 
     assert(xTimerStart(lcd_timer, BLOCK_TIME));
 
@@ -444,6 +474,9 @@ void lcd_register_conf() {
 }
 
 void lcd_init() {
+    lcd_config = &(lcd_configs[lcd_type]);
+    lcd = new LcdDevice();
+
     lcd_queue = xQueueCreate(8, sizeof(lcd_message));
     assert(lcd_queue != NULL);
 
