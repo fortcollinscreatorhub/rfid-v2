@@ -21,6 +21,11 @@
 include <mounting.scad>;
 
 color([1, 1, 1, 0.15]) {
+    translate([0, 0, -1 ]) {
+        linear_extrude(height=1+epsilon) {
+            layer_m1_offset_ring();
+        }
+    }
     #
     translate([0, 0, 0]) {
         linear_extrude(height=3+epsilon) {

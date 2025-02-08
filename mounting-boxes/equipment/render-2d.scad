@@ -20,6 +20,7 @@
 
 include <mounting.scad>;
 
+translate([-1 * box_w * 1.25, 0]) layer_m1_offset_ring();
 translate([0 * box_w * 1.25, 0]) layer_0_screws();
 translate([1 * box_w * 1.25, 0]) layer_1_heads();
 translate([3 * box_w * 1.25, 0]) layer_2_pcb(wide_usbc_cutout=true);

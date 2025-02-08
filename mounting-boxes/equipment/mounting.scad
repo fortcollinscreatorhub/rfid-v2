@@ -25,9 +25,11 @@ inches = 25.4;
 box_w = 118; // 4.5" nominal, but measures taller.
 box_h = 115; // 4.5" nominal, and measures that.
 box_padding = 0.25 * inches;
+box_layer_m1_padding = 20;
 box_nut_padding = inches / 10;
 box_corner_r = 2;
 barrel_nut_r = 5 / 2;
+barrel_nut_cutout_r = 9.5 / 2;
 barrel_screw_r = 4 / 2;
 num6_screw_r = 3.75 / 2;
 num6_head_r = 9 / 2;
@@ -101,6 +103,11 @@ module barrel_nut_hole() {
     circle(r=barrel_nut_r);
 }
 
+module barrel_nut_offset_cutout() {
+    r = barrel_nut_r + barrel_nut_cutout_r;
+    circle(r=r);
+}
+
 module barrel_screw_hole() {
     circle(r=barrel_screw_r);
 }
@@ -116,6 +123,14 @@ function barrel_positions() =
 module barrel_nut_holes() {
     for (c = barrel_positions()) {
         translate(c) barrel_nut_hole();
+    }
+}
+
+module barrel_nut_offset_cutouts() {
+    for (i = [0:3]) {
+        translate(barrel_positions()[i])
+            rotate(i * 90)
+                barrel_nut_offset_cutout();
     }
 }
 
@@ -204,6 +219,16 @@ module coil_cutout() {
         translate([coil_to_wire_cutout_x, coil_to_wire_cutout_y]) {
             square(size=[coil_wire_cutout_w, coil_wire_cutout_h], center=true);
         }
+    }
+}
+
+module layer_m1_offset_ring() {
+    difference() {
+        outline();
+        offset(r=-box_layer_m1_padding) outline();
+        gang_screw_holes();
+        four_inch_screw_holes();
+        barrel_nut_offset_cutouts();
     }
 }
 
