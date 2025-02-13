@@ -1,4 +1,4 @@
-# What's in this directory
+# Mounting box for equipment
 
 A design for a box to contain the PCB, and to attach to a piece of equipment.
 It's designed to screw into any of:

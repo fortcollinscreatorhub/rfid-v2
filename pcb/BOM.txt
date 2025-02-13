@@ -2,7 +2,7 @@ U1
     ideaspark® ESP32 Development Board 1.14 inch 135x240 LCD Display,CH340,WiFi+BL
     https://www.ebay.com/itm/176446899270
     ebay seller: https://www.ebay.com/str/ideaspark
-    Amazon ???
+    https://www.amazon.com/dp/B0D7S7YQMC
     https://www.aliexpress.us/item/3256807079419720.html
 
     Alternative (change #if in lcd.cpp):

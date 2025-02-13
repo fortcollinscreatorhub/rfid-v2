@@ -1,9 +1,9 @@
-# What's in this directory
+# Mounting box designs
 
-## Mounting box for equipment
+## For equipment
 
-See the [README file here](equipment/README.md).
+See the [equipment box README](equipment/README.md).
 
-## Mounting box for doors
+## For doors
 
 Not yet!
