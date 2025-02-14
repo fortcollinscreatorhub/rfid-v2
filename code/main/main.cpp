@@ -81,12 +81,17 @@ static void main_event_handler(
             }
             break;
         }
-        case MAIN_EVENT_RFID_ABSENT:
+        case MAIN_EVENT_RFID_ABSENT: {
             ESP_LOGI(TAG, "MAIN_EVENT_RFID_ABSENT");
+            bool allowed;
+            // Ignore errors in ACL check; this is only performed to create a
+            // log entry for offline stats reporting.
+            acl_client_check_id(0, &allowed);
             relay_on_rfid_none();
             lcd_on_rfid_none();
             mqtt_on_rfid_none();
             break;
+        }
         default:
             ESP_LOGI(TAG, "MAIN_EVENT_? %" PRId32, event_id);
             break;
