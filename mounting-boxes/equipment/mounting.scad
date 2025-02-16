@@ -28,7 +28,9 @@ box_padding = 0.25 * inches;
 box_layer_m1_padding = 20;
 box_nut_padding = inches / 10;
 box_corner_r = 2;
-barrel_nut_r = 5 / 2;
+// 5 measured, but smaller for kerf correction, so barrels don't fall out
+// too much during assembly.
+barrel_nut_r = 4.95 / 2;
 barrel_nut_cutout_r = 9.5 / 2; // Measured 8.5, with some margin
 barrel_screw_r = 4 / 2;
 num6_screw_r = 3.75 / 2;
