@@ -29,7 +29,7 @@ box_layer_m1_padding = 20;
 box_nut_padding = inches / 10;
 box_corner_r = 2;
 barrel_nut_r = 5 / 2;
-barrel_nut_cutout_r = 9.5 / 2;
+barrel_nut_cutout_r = 9.5 / 2; // Measured 8.5, with some margin
 barrel_screw_r = 4 / 2;
 num6_screw_r = 3.75 / 2;
 num6_head_r = 9 / 2;
@@ -104,7 +104,7 @@ module barrel_nut_hole() {
 }
 
 module barrel_nut_offset_cutout() {
-    r = barrel_nut_r + barrel_nut_cutout_r;
+    r = barrel_nut_cutout_r;
     circle(r=r);
 }
 
