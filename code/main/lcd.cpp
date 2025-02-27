@@ -139,7 +139,7 @@ public:
     LcdDevice() {
         auto bus_cfg = m_bus_instance.config();
         bus_cfg.spi_host = SPI2_HOST;
-        bus_cfg.spi_mode = 2;
+        bus_cfg.spi_mode = 3;
         bus_cfg.freq_write = 27000000;
         bus_cfg.freq_read = 16000000;
         bus_cfg.spi_3wire = true;
