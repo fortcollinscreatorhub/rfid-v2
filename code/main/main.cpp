@@ -59,37 +59,55 @@ static void main_event_handler(
         case MAIN_EVENT_RFID_PRESENT: {
             uint32_t rfid = *(uint32_t *)event_data;
             ESP_LOGI(TAG, "MAIN_EVENT_RFID_PRESENT: %lu", rfid);
-            // FIXME: Might want our own event loop task since
-            // acl_client_check_id might take a while.
-            // rfid_init should take an event loop handle to post to.
-            bool allowed;
-            esp_err_t err = acl_client_check_id(rfid, &allowed);
-            if (err != ESP_OK) {
-                ESP_LOGW(TAG, "ACL check error: %d", err);
-                lcd_on_rfid_err(rfid);
-                mqtt_on_rfid_err(rfid);
-                break;
+            bool momentary_debug_active = false;
+#ifdef MOMENTARY_DEBUG_BYPASS_ACL
+            momentary_debug_active = true;
+#endif
+            if (!momentary_debug_active) {
+                momentary_debug_active = (momentary_get_debug_enabled() != 0);
             }
-            ESP_LOGI(TAG, "ACL check: %d", (int)allowed);
-            if (allowed) {
+
+            if (momentary_debug_active) {
+                ESP_LOGI(TAG, "Momentary debug active: granting access for RFID %lu", rfid);
                 relay_on_rfid_ok();
                 lcd_on_rfid_ok(rfid);
-                mqtt_on_rfid_ok(rfid);
             } else {
-                lcd_on_rfid_bad(rfid);
-                mqtt_on_rfid_bad(rfid);
+                // FIXME: Might want our own event loop task since
+                // acl_client_check_id might take a while.
+                // rfid_init should take an event loop handle to post to.
+                bool allowed;
+                esp_err_t err = acl_client_check_id(rfid, &allowed);
+                if (err != ESP_OK) {
+                    ESP_LOGW(TAG, "ACL check error: %d", err);
+                    lcd_on_rfid_err(rfid);
+                    mqtt_on_rfid_err(rfid);
+                    break;
+                }
+                ESP_LOGI(TAG, "ACL check: %d", (int)allowed);
+                if (allowed) {
+                    relay_on_rfid_ok();
+                    lcd_on_rfid_ok(rfid);
+                    mqtt_on_rfid_ok(rfid);
+                } else {
+                    lcd_on_rfid_bad(rfid);
+                    mqtt_on_rfid_bad(rfid);
+                }
             }
             break;
         }
         case MAIN_EVENT_RFID_ABSENT: {
             ESP_LOGI(TAG, "MAIN_EVENT_RFID_ABSENT");
+#ifndef MOMENTARY_DEBUG_BYPASS_ACL
             bool allowed;
             // Ignore errors in ACL check; this is only performed to create a
             // log entry for offline stats reporting.
             acl_client_check_id(0, &allowed);
+#endif
             relay_on_rfid_none();
             lcd_on_rfid_none();
+#ifndef MOMENTARY_DEBUG_BYPASS_ACL
             mqtt_on_rfid_none();
+#endif
             break;
         }
         default:
