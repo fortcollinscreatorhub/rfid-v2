@@ -15,3 +15,9 @@ extern void momentary_init(
 );
 extern void momentary_on_rfid_present(uint32_t rfid);
 extern void momentary_on_rfid_absent();
+
+/* Return the configured momentary duration in milliseconds (0 = disabled) */
+extern uint32_t momentary_get_milliseconds();
+
+/* Return non-zero if momentary debug bypass is enabled via config (0 = disabled) */
+extern uint16_t momentary_get_debug_enabled();
