@@ -22,7 +22,8 @@ U2
 Q1
     PN2222A TO92 (or probably many other NPN BJTs)
     https://www.mouser.com/ProductDetail/onsemi-Fairchild/PN2222ABU?qs=UMEuL5FsraBJOIjLOc%2FtCA%3D%3D
-    https://www.digikey.com/en/products/detail/stmicroelectronics/PN2222A/603431
+    https://www.digikey.com/en/products/detail/stmicroelectronics/PN2222A/603431 (no longer manfucatured)
+    https://www.digikey.com/en/products/detail/onsemi/PN2222ABU/6534
     https://www.amazon.com/dp/B0C1V82313
 
 D1
