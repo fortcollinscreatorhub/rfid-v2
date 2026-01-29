@@ -8,6 +8,7 @@
 #include <esp_log.h>
 
 #include "fcch_acl_client/acl_client.h"
+#include "fcch_connmgr/cm.h"
 #include "fcch_connmgr/cm_conf.h"
 #include "fcch_connmgr/cm_net.h"
 #include "fcch_connmgr/cm_util.h"
@@ -55,12 +56,30 @@ static cm_conf_page access_control_page_acc = {
 };
 
 static const char *acl_client_user_agent;
+static bool acl_allow_any;
+
+static void acl_http_action_allow_any() {
+    acl_allow_any = !acl_allow_any;
+}
+
+static const char *acl_http_action_allow_any_description() {
+    if (acl_allow_any) {
+        return "ACL allow any RFID (Is On)";
+    } else {
+        return "ACL allow any RFID (Is Off)";
+    }
+}
 
 void acl_client_register_conf() {
     cm_conf_register_page(&access_control_page_acc);
 }
 
 esp_err_t acl_client_check_id(uint32_t rfid, bool *allowed) {
+    if (acl_allow_any) {
+        *allowed = true;
+        return ESP_OK;
+    }
+
     *allowed = false;
 
     if (acl_client_hostname[0] == '\0' ||
@@ -131,4 +150,10 @@ void acl_client_init() {
     char *user_agent;
     asprintf(&user_agent, "%s FCCH ACL Client", cm_net_hostname);
     acl_client_user_agent = user_agent;
+
+    cm_http_register_home_action(
+        "acl-allow-any",
+        acl_http_action_allow_any_description,
+        acl_http_action_allow_any
+    );
 }
