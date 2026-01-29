@@ -44,6 +44,22 @@ static void main_rfid_absent() {
         NULL, 0, 10 / portTICK_PERIOD_MS));
 }
 
+static void main_http_action_present_fake_rfid() {
+    momentary_on_rfid_present(12345);
+}
+
+static const char *main_http_action_present_fake_rfid_description() {
+    return "Present Fake RFID 12345";
+}
+
+static void main_http_action_remove_rfid() {
+    momentary_on_rfid_absent();
+}
+
+static const char *main_http_action_remove_rfid_description() {
+    return "Remove RFID";
+}
+
 static void main_event_handler(
     void *arg,
     esp_event_base_t event_base,
@@ -119,6 +135,16 @@ extern "C" void app_main() {
     acl_client_init();
     momentary_init(&main_rfid_present,  &main_rfid_absent);
     rfid_init(&momentary_on_rfid_present, &momentary_on_rfid_absent);
+    cm_http_register_home_action(
+        "main-present-fake-rfid",
+        main_http_action_present_fake_rfid_description,
+        main_http_action_present_fake_rfid
+    );
+    cm_http_register_home_action(
+        "main-remove-rfid",
+        main_http_action_remove_rfid_description,
+        main_http_action_remove_rfid
+    );
     ESP_ERROR_CHECK(esp_event_handler_register_with(main_event_loop,
         MAIN_EVENT, ESP_EVENT_ANY_ID, main_event_handler, NULL));
 }
