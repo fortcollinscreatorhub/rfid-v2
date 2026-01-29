@@ -36,8 +36,18 @@ static cm_conf_item momentary_item_momentary_seconds = {
     .default_func = &cm_conf_default_u16_0,
 };
 
+static uint16_t momentary_milliseconds;
+static cm_conf_item momentary_item_momentary_milliseconds = {
+    .slug_name = "mtms", // Momentary Time MilliSeconds
+    .text_name = "Momentary Time (Milliseconds, 0 to disable, S+MS are added)",
+    .type = CM_CONF_ITEM_TYPE_U16,
+    .p_val = {.u16 = &momentary_milliseconds },
+    .default_func = &cm_conf_default_u16_0,
+};
+
 static cm_conf_item *momentary_items[] = {
     &momentary_item_momentary_seconds,
+    &momentary_item_momentary_milliseconds,
 };
 
 static cm_conf_page momentary_page = {
@@ -53,8 +63,16 @@ static uint32_t momentary_timer_epoch;
 static momentary_callback_present *momentary_cb_present;
 static momentary_callback_absent *momentary_cb_absent;
 
+static bool momentary_enabled() {
+    return (momentary_seconds != 0) || (momentary_milliseconds != 0);
+}
+
+static uint32_t momentary_calc_ms() {
+    return (momentary_seconds * 1000) + momentary_milliseconds;
+}
+
 static void momentary_on_msg_timer(momentary_message &msg) {
-    assert(momentary_seconds > 0);
+    assert(momentary_enabled());
 
     if (msg.timer_epoch != momentary_timer_epoch) {
         ESP_LOGW(TAG, "epoch mismatch: msg:%" PRIu32 ", state:%" PRIu32,
@@ -67,7 +85,7 @@ static void momentary_on_msg_timer(momentary_message &msg) {
 static void momentary_on_msg_rfid_present(momentary_message &msg) {
     momentary_cb_present(msg.rfid);
 
-    if (momentary_seconds > 0) {
+    if (momentary_enabled()) {
         assert(xTimerStop(momentary_timer, BLOCK_TIME) == pdPASS);
         momentary_timer_epoch++;
         assert(xTimerStart(momentary_timer, BLOCK_TIME) == pdPASS);
@@ -75,7 +93,7 @@ static void momentary_on_msg_rfid_present(momentary_message &msg) {
 }
 
 static void momentary_on_msg_rfid_absent(momentary_message &msg) {
-    if (momentary_seconds == 0) {
+    if (!momentary_enabled()) {
         momentary_cb_absent();
     }
 }
@@ -103,7 +121,7 @@ static void momentary_task(void *pvParameters) {
 }
 
 static void momentary_on_timer(TimerHandle_t xTimer) {
-    assert(momentary_seconds > 0);
+    assert(momentary_enabled());
 
     momentary_message msg{
         .id = MOMENTARY_MESSAGE_TIMER,
@@ -126,10 +144,11 @@ void momentary_init(
     momentary_queue = xQueueCreate(8, sizeof(momentary_message));
     assert(momentary_queue != NULL);
 
-    if (momentary_seconds > 0) {
+    uint32_t ms = momentary_calc_ms();
+    if (ms > 0) {
         momentary_timer = xTimerCreate(
             "momentary",
-            (momentary_seconds * 1000) / portTICK_PERIOD_MS,
+            ms / portTICK_PERIOD_MS,
             pdFALSE,
             NULL,
             momentary_on_timer);
