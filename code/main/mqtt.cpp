@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Stephen Warren <swarren@wwwdotorg.org>
+// Copyright 2024-2026 Stephen Warren <swarren@wwwdotorg.org>
 // SPDX-License-Identifier: MIT
 
 #include <esp_log.h>
@@ -47,13 +47,6 @@ static void mqtt_publish_status() {
     cm_mqtt_publish_stat(data.val);
 }
 
-static void mqtt_stop_timer() {
-    if (mqtt_timer == NULL)
-        return;
-    mqtt_timer_epoch++;
-    assert(xTimerStop(mqtt_timer, BLOCK_TIME) == pdPASS);
-}
-
 static void mqtt_start_timer() {
     if (mqtt_timer == NULL)
         return;
@@ -71,8 +64,6 @@ static void mqtt_on_msg_timer(mqtt_message &msg) {
 }
 
 static void mqtt_on_msg_rfid_err(mqtt_message &msg) {
-    mqtt_stop_timer();
-
     mqtt_last_rfid = msg.rfid;
     mqtt_last_status = "OFF";
     mqtt_last_rfid_status = "ERROR";
@@ -84,13 +75,9 @@ static void mqtt_on_msg_rfid_ok(mqtt_message &msg) {
     mqtt_last_status = "ON";
     mqtt_last_rfid_status = "GRANT";
     mqtt_publish_status();
-
-    mqtt_start_timer();
 }
 
 static void mqtt_on_msg_rfid_bad(mqtt_message &msg) {
-    mqtt_stop_timer();
-
     mqtt_last_rfid = msg.rfid;
     mqtt_last_status = "OFF";
     mqtt_last_rfid_status = "DENY";
@@ -98,8 +85,6 @@ static void mqtt_on_msg_rfid_bad(mqtt_message &msg) {
 }
 
 static void mqtt_on_msg_rfid_none(mqtt_message &msg) {
-    mqtt_stop_timer();
-
     mqtt_last_rfid = msg.rfid;
     mqtt_last_status = "OFF";
     mqtt_last_rfid_status = "ABSENT";
@@ -146,6 +131,7 @@ static void mqtt_on_timer(TimerHandle_t xTimer) {
 void mqtt_init() {
     mqtt_queue = xQueueCreate(8, sizeof(mqtt_message));
     assert(mqtt_queue != NULL);
+    mqtt_on_rfid_none();
 
     if (cm_mqtt_status_period) {
         mqtt_timer = xTimerCreate(
@@ -155,6 +141,7 @@ void mqtt_init() {
             NULL,
             mqtt_on_timer);
         assert(mqtt_timer != NULL);
+        mqtt_start_timer();
     } else {
         mqtt_timer = NULL;
     }
