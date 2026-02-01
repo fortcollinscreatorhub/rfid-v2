@@ -7,6 +7,7 @@
 #include <driver/gpio.h>
 #include <esp_log.h>
 
+#include "fcch_connmgr/cm.h"
 #include "fcch_connmgr/cm_util.h"
 #include "fcch_rfid/rfid.h"
 
@@ -17,7 +18,9 @@ static const int cm_rfid_pin_txd = UART_PIN_NO_CHANGE;
 static const int cm_rfid_pin_rxd = GPIO_NUM_13;
 static const int cm_rfid_pin_rts = UART_PIN_NO_CHANGE;
 static const int cm_rfid_pin_cts = UART_PIN_NO_CHANGE;
+static const uint32_t rfid_fake_id = 12345;
 static const TickType_t rfid_timeout_ticks = 2000 / portTICK_PERIOD_MS;
+static const TickType_t rfid_fake_time_ticks = 10000 / portTICK_PERIOD_MS;
 
 static rfid_callback_present *rfid_cb_present;
 static rfid_callback_absent *rfid_cb_absent;
@@ -46,41 +49,70 @@ static void rfid_init_uart() {
 
 static const int rfid_len = 12; // excluding STX, ETX
 
-static uint32_t last_rfid;
-static TickType_t last_rfid_time;
+static uint32_t rfid_last_id;
+static TickType_t rfid_last_id_time;
+static bool rfid_fake_present;
+static TickType_t rfid_fake_present_time;
+
+static void rfid_http_action_present_fake_rfid() {
+    rfid_fake_present = true;
+    rfid_fake_present_time = xTaskGetTickCount();
+}
+
+static const char *rfid_http_action_present_fake_rfid_description() {
+    assert(rfid_fake_id == 12345);
+    assert(rfid_fake_time_ticks == 10000 / portTICK_PERIOD_MS);
+    return "Present Fake RFID 12345 for 10s";
+}
 
 static void rfid_send_present(uint32_t rfid) {
-    last_rfid = rfid;
+    rfid_last_id = rfid;
     ESP_LOGD(TAG, "RFID present %lu", rfid);
     rfid_cb_present(rfid);
 }
 
 static void rfid_send_removed() {
-    last_rfid = 0;
+    rfid_last_id = 0;
     ESP_LOGD(TAG, "RFID removed");
     rfid_cb_absent();
 }
 
 static void rfid_handle(uint32_t rfid) {
-    if (last_rfid && last_rfid != rfid)
+    if (rfid_fake_present)
+        rfid = rfid_fake_id;
+
+    if (rfid_last_id && rfid_last_id != rfid)
         rfid_send_removed();
 
     TickType_t now = xTaskGetTickCount();
-    last_rfid_time = now;
+    rfid_last_id_time = now;
 
-    if (rfid == last_rfid)
+    if (rfid == rfid_last_id)
         return;
 
     rfid_send_present(rfid);
 }
 
 static void rfid_check_timeout() {
-    if (last_rfid == 0)
-        return;
+    bool clear_rfid = false;
 
     TickType_t now = xTaskGetTickCount();
-    TickType_t time_since_rfid = now - last_rfid_time;
-    if (time_since_rfid < rfid_timeout_ticks)
+
+    if (rfid_fake_present) {
+        TickType_t time_since_fake = now - rfid_fake_present_time;
+        if (time_since_fake > rfid_fake_time_ticks) {
+            rfid_fake_present = false;
+            clear_rfid = true;
+        }
+    }
+
+    if (rfid_last_id) {
+        TickType_t time_since_rfid = now - rfid_last_id_time;
+        TickType_t timeout = rfid_timeout_ticks;
+        clear_rfid |= (time_since_rfid >= timeout);
+    }
+
+    if (!clear_rfid)
         return;
 
     rfid_send_removed();
@@ -121,6 +153,8 @@ static void rfid_task(void *pvParameters) {
         char rx_buf[1 + rfid_len + 1 + 1]; // STX, rfid data, ETX, NUL
         int rx_buf_len = uart_read_bytes(cm_rfid_uart_num,
             rx_buf, sizeof(rx_buf) - 1, 100 / portTICK_PERIOD_MS);
+        if (rfid_fake_present)
+            rfid_handle(rfid_fake_id);
         if (rx_buf_len) {
             rx_buf[rx_buf_len] = '\0';
             ESP_LOGD(TAG, "Raw TX (%s)", rx_buf);
@@ -169,4 +203,9 @@ void rfid_init(
     rfid_init_uart();
     xTaskCreate(&rfid_task, "rfid", 4096, NULL, 5, NULL);
     ESP_LOGI(TAG, "rfid_init: done");
+    cm_http_register_home_action(
+        "rfid-present-fake-rfid",
+        rfid_http_action_present_fake_rfid_description,
+        rfid_http_action_present_fake_rfid
+    );
 }
