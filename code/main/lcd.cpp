@@ -1,10 +1,11 @@
-// Copyright 2024-2025 Stephen Warren <swarren@wwwdotorg.org>
+// Copyright 2024-2026 Stephen Warren <swarren@wwwdotorg.org>
 // SPDX-License-Identifier: MIT
 
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <LovyanGFX.hpp>
 
+#include "app_config.h"
 #include "fcch_connmgr/cm.h"
 #include "fcch_connmgr/cm_conf.h"
 #include "fcch_connmgr/cm_net.h"
@@ -12,6 +13,9 @@
 #include "fcch_connmgr/cm_util.h"
 #include "lcd.h"
 
+// ideaspark® ESP32 Development Board 1.14 inch 135x240 LCD Display,CH340,WiFi+BL
+// ideaspark® ESP32 Development Board 16MB 1.9 in 170x320 LCD Display,CH340,WiFi+BL
+#if (ESP_MODULE == ESP_MODULE_IDEASPARK)
 #define DISPLAY_RST 4
 #define DISPLAY_DC 2
 #define DISPLAY_MOSI 23
@@ -20,6 +24,20 @@
 #define DISPLAY_LEDA 32
 #define DISPLAY_MISO -1
 #define DISPLAY_BUSY -1
+#elif (ESP_MODULE == ESP_MODULE_LILYGO)
+// TTGO LILYGO T-Display V1.1
+// MELIFE ESP32 Development Board, 16MB Integrated LCD WiFi Kit, 1.14 Inch 135x240 TFT LCD Display,
+#define DISPLAY_RST 23
+#define DISPLAY_DC 16
+#define DISPLAY_MOSI 19
+#define DISPLAY_CS 5
+#define DISPLAY_SCLK 18
+#define DISPLAY_LEDA 4
+#define DISPLAY_MISO -1
+#define DISPLAY_BUSY -1
+#else
+#error "Unknown ESP_MODULE"
+#endif
 
 struct lcd_config {
     int width;
@@ -39,6 +57,7 @@ static const lcd_config lcd_configs[] = {
         .offset_y = 53,
         .font_size = 2,
     },
+#if (ESP_MODULE == ESP_MODULE_IDEASPARK)
     // ideaspark® ESP32 Development Board 16MB 1.9 in 170x320 LCD Display,CH340,WiFi+BL
     {
         .width = 320,
@@ -47,6 +66,7 @@ static const lcd_config lcd_configs[] = {
         .offset_y = 35,
         .font_size = 3,
     },
+#endif
 };
 static const lcd_config *lcd_config = nullptr;
 
@@ -61,7 +81,13 @@ static void lcd_replace_invalid_type(cm_conf_item *item, cm_conf_p_val p_val_u) 
 }
 static cm_conf_item lcd_item_lcd_type = {
     .slug_name = "ty", // TYpe
+#if (ESP_MODULE == ESP_MODULE_IDEASPARK)
     .text_name = "Type (0: ideaspark 1.14\", 1: ideaspark 1.90\")",
+#elif (ESP_MODULE == ESP_MODULE_LILYGO)
+    .text_name = "Type (0: lilygo 1.14\")",
+#else
+#error "Unknown ESP_MODULE"
+#endif
     .type = CM_CONF_ITEM_TYPE_U16,
     .p_val = {.u16 = &lcd_type },
     .default_func = &cm_conf_default_u16_0,

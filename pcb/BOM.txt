@@ -5,7 +5,7 @@ U1
     https://www.amazon.com/dp/B0D7S7YQMC
     https://www.aliexpress.us/item/3256807079419720.html
 
-    Alternative (change #if in lcd.cpp):
+    Alternative (change runtime LCD config):
     ideaspark® ESP32 Development Board 16MB 1.9 in 170x320 LCD Display,CH340,WiFi+BL
     https://www.ebay.com/itm/176425903544
     ebay seller: https://www.ebay.com/str/ideaspark
@@ -18,6 +18,14 @@ U2
     https://www.amazon.com/dp/B00HGB9TOE
     https://www.aliexpress.us/item/3256803401542028.html
     (Many others sell the exact same item on all sites)
+
+U3
+    TTGO LILYGO T-Display V1.1
+    https://www.amazon.com/dp/B099MPFJ9M
+    https://lilygo.cc/en-us/products/t-display?variant=42159376466101
+
+    MELIFE ESP32 Development Board, 16MB Integrated LCD WiFi Kit, 1.14 Inch 135x240 TFT LCD Display,
+    https://www.amazon.com/dp/B0FB94RC47
 
 Q1
     PN2222A TO92 (or probably many other NPN BJTs)

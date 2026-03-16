@@ -1,4 +1,4 @@
-// Copyright 2024-2025 Stephen Warren <swarren@wwwdotorg.org>
+// Copyright 2024-2026 Stephen Warren <swarren@wwwdotorg.org>
 // SPDX-License-Identifier: MIT
 
 #include <driver/gpio.h>
@@ -6,10 +6,17 @@
 #include <freertos/FreeRTOS.h>
 #include <string.h>
 
+#include "app_config.h"
 #include "fcch_connmgr/cm.h"
 #include "relay.h"
 
+#if (ESP_MODULE == ESP_MODULE_IDEASPARK)
 #define RELAY_GPIO GPIO_NUM_14
+#elif (ESP_MODULE == ESP_MODULE_LILYGO)
+#define RELAY_GPIO GPIO_NUM_12
+#else
+#error "Unknown ESP_MODULE"
+#endif
 
 // static const char *TAG = "relay";
 
